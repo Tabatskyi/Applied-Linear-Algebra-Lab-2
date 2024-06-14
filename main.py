@@ -17,14 +17,22 @@ def find_eigens(matrix):
 print(find_eigens(np.array([[1, 2], [2, 1]])))
 
 image_raw = imread("image2.jpg")
-image_bw = np.mean(image_raw, axis=2) / 255
+image_sum = image_raw.sum(axis=2)
+print(image_sum.shape)
+image_bw = image_sum / image_sum.max()
+plt.imshow(image_bw, cmap='gray')
+plt.show()
+print(image_bw.max())
 
-X = image_bw.reshape(-1, 1)
+X = image_bw.reshape(image_bw.shape[0], -1)
+plt.hist(X.ravel(), bins=256, color='gray')
+plt.show()
 
 pca = PCA()
 pca.fit(X)
 
-cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+variance_ratio = pca.explained_variance_ratio_
+cumulative_variance = np.cumsum(variance_ratio)
 
 n_components = np.where(cumulative_variance >= 0.95)[0][0] + 1
 
