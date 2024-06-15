@@ -50,6 +50,26 @@ def pca_reconstruction(image, percentage_variance=0.95, plot=False):
     return X_reconstructed.reshape(image_bw.shape), components
 
 
+def encrypt_message(message, key_matrix):
+    message_vector = np.array([ord(char) for char in message])
+    print(message_vector)
+    eigenval, eigenvec = find_eigens(key_matrix)
+    diagonal_matrix = np.diag(eigenval)
+    inverse_eigenvec = np.linalg.inv(eigenvec)
+    diagonalized_key = np.dot(np.dot(eigenvec, diagonal_matrix), inverse_eigenvec)
+    return np.dot(diagonalized_key, message_vector)
+
+
+def decrypt_message(encrypted_message, key_matrix):
+    eigenval, eigenvec = find_eigens(key_matrix)
+    diagonal_matrix = np.diag(eigenval)
+    inverse_eigenvec = np.linalg.inv(eigenvec)
+    diagonalized_key = np.dot(np.dot(eigenvec, diagonal_matrix), inverse_eigenvec)
+    inverse_diagonalized_key = np.linalg.inv(diagonalized_key)
+    decrypted_message = np.round(np.real(np.dot(inverse_diagonalized_key, encrypted_message))).astype(int)
+    return ''.join([chr(char) for char in decrypted_message])
+
+
 print(find_eigens(np.array([[1, 2], [2, 1]])))
 
 image_raw = imread('image3.png')
@@ -87,3 +107,12 @@ for i, (variance_threshold, reconstructed_image, n_components) in enumerate(resu
     plt.axis('off')
 plt.tight_layout()
 plt.show()
+
+
+message = "Hello, World!"
+key_matrix = np.random.randint(0, 256, (len(message), len(message)))
+
+encrypted_message = encrypt_message(message, key_matrix)
+decrypted_message = decrypt_message(encrypted_message, key_matrix)
+
+print(f'Original message: {message}\nEncrypted message: {encrypted_message}\nDecrypted message: {decrypted_message}')
