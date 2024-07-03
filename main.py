@@ -52,7 +52,6 @@ def pca_reconstruction(image, percentage_variance=0.95, plot=False):
 
 def encrypt_message(message, key_matrix):
     message_vector = np.array([ord(char) for char in message])
-    print(message_vector)
     eigenval, eigenvec = find_eigens(key_matrix)
     diagonal_matrix = np.diag(eigenval)
     inverse_eigenvec = np.linalg.inv(eigenvec)
